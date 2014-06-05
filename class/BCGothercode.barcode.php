@@ -21,6 +21,8 @@ class BCGothercode extends BCGBarcode1D {
      */
     public function __construct() {
         parent::__construct();
+
+        $this->keys = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
     }
 
     /**
@@ -71,6 +73,13 @@ class BCGothercode extends BCGBarcode1D {
         $c = strlen($this->text);
         if ($c === 0) {
             throw new BCGParseException('othercode', 'No data has been entered.');
+        }
+
+        // Checking if all chars are allowed
+        for ($i = 0; $i < $c; $i++) {
+            if (array_search($this->text[$i], $this->keys) === false) {
+                throw new BCGParseException('othercode', 'The character \'' . $this->text[$i] . '\' is not allowed.');
+            }
         }
 
         parent::validate();

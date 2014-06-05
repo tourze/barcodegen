@@ -12,6 +12,7 @@ include_once('BCGArgumentException.php');
 include_once('BCGBarcode.php');
 include_once('BCGFontPhp.php');
 include_once('BCGFontFile.php');
+include_once('BCGLabel.php');
 
 abstract class BCGBarcode1D extends BCGBarcode {
     const SIZE_SPACING_FONT = 5;
@@ -21,11 +22,11 @@ abstract class BCGBarcode1D extends BCGBarcode {
     protected $thickness;       // int
     protected $keys, $code;     // string[]
     protected $positionX;       // int
-    protected $textfont;        // BCGFont
+    protected $font;            // BCGFont
     protected $text;            // string
     protected $checksumValue;   // int or int[]
     protected $displayChecksum; // bool
-    protected $label;           // Label
+    protected $label;           // string
     protected $defaultLabel;    // BCGLabel
 
     /**
@@ -43,6 +44,7 @@ abstract class BCGBarcode1D extends BCGBarcode {
 
         $this->text = '';
         $this->checksumValue = false;
+        $this->positionX = 0;
     }
 
     /**
@@ -60,10 +62,12 @@ abstract class BCGBarcode1D extends BCGBarcode {
      * @param int $thickness
      */
     public function setThickness($thickness) {
-        $this->thickness = intval($thickness);
-        if ($this->thickness <= 0) {
+        $thickness = intval($thickness);
+        if ($thickness <= 0) {
             throw new BCGArgumentException('The thickness must be larger than 0.', 'thickness');
         }
+
+        $this->thickness = $thickness;
     }
 
     /**
@@ -196,8 +200,8 @@ abstract class BCGBarcode1D extends BCGBarcode {
     }
 
     /**
-     * Draws all chars thanks to $code. if $start is true, the line begins by a space.
-     * if $start is false, the line begins by a bar.
+     * Draws all chars thanks to $code. If $startBar is true, the line begins by a space.
+     * If $startBar is false, the line begins by a bar.
      *
      * @param resource $im
      * @param string $code

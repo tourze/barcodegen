@@ -57,14 +57,14 @@ class BCGcode128 extends BCGBarcode1D {
     private $latch;
     private $fnc;
 
-    private $METHOD            = NULL; // Array of method available to create PDF417 (PDF417_TM, PDF417_NM, PDF417_BM)
+    private $METHOD            = null; // Array of method available to create Code128 (CODE128_A, CODE128_B, CODE128_C)
 
     /**
      * Constructor.
      *
      * @param char $start
      */
-    public function __construct($start = NULL) {
+    public function __construct($start = null) {
         parent::__construct();
 
         /* CODE 128 A */
@@ -74,7 +74,7 @@ class BCGcode128 extends BCGBarcode1D {
         }
 
         /* CODE 128 B */
-        $this->keysB = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'.chr(127);
+        $this->keysB = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~' . chr(127);
 
         /* CODE 128 C */
         $this->keysC = '0123456789';
@@ -212,19 +212,19 @@ class BCGcode128 extends BCGBarcode1D {
     }
 
     /**
-     * Specifies the start code. Can be 'A', 'B', 'C', or NULL
+     * Specifies the start code. Can be 'A', 'B', 'C', or null
      *  - Table A: Capitals + ASCII 0-31 + punct
      *  - Table B: Capitals + LowerCase + punct
      *  - Table C: Numbers
      *
-     * If NULL is specified, the table selection is automatically made.
-     * The default is NULL.
+     * If null is specified, the table selection is automatically made.
+     * The default is null.
      *
      * @param string $table
      */
     public function setStart($table) {
-        if ($table !== 'A' && $table !== 'B' && $table !== 'C' && $table !== NULL) {
-            throw new BCGArgumentException('The starting table must be A, B, C or NULL.', 'table');
+        if ($table !== 'A' && $table !== 'B' && $table !== 'C' && $table !== null) {
+            throw new BCGArgumentException('The starting table must be A, B, C or null.', 'table');
         }
 
         $this->starting_text = $table;
@@ -242,7 +242,7 @@ class BCGcode128 extends BCGBarcode1D {
     /**
      * Accepts tilde to be process as a special character.
      * If true, you can do this:
-     *  - ~~    : to make ONE tilde
+     *  - ~~     : to make ONE tilde
      *  - ~Fx    : to insert FCNx. x is equal from 1 to 4.
      *
      * @param boolean $accept
@@ -385,7 +385,7 @@ class BCGcode128 extends BCGBarcode1D {
      * @param string $text
      */
     private function setStartFromText($text) {
-        if ($this->starting_text === NULL) {
+        if ($this->starting_text === null) {
             // If we have a forced table at the start, we get that one...
             if (is_array($text)) {
                 if (is_array($text[0])) {
@@ -411,7 +411,7 @@ class BCGcode128 extends BCGBarcode1D {
             if ($length >= 4 && preg_match('/[' . $tmp . ']/', substr($text, 0, 4))) {
                 $this->starting_text = 'C';
             } else {
-                if ($length > 0 && strpos($this->keysB, $text[0])) {
+                if ($length > 0 && strpos($this->keysB, $text[0]) !== false) {
                     $this->starting_text = 'B';
                 } else {
                     $this->starting_text = 'A';
@@ -428,7 +428,7 @@ class BCGcode128 extends BCGBarcode1D {
      * @param int $pos
      * @return string
      */
-    private function extractTilde($text, $pos) {
+    private static function extractTilde($text, $pos) {
         if ($text[$pos] === '~') {
             if (isset($text[$pos + 1])) {
                 // Do we have a tilde?
@@ -470,7 +470,7 @@ class BCGcode128 extends BCGBarcode1D {
             $sequence = '';
             $previousPos = 0;
             while (($pos = strpos($text, '~', $previousPos)) !== false) {
-                $tildeData = $this->extractTilde($text, $pos);
+                $tildeData = self::extractTilde($text, $pos);
 
                 $simpleTilde = ($tildeData === '~~');
                 if ($simpleTilde && $currentMode !== 'B') {
@@ -486,7 +486,7 @@ class BCGcode128 extends BCGBarcode1D {
                 $length = $pos - $previousPos;
                 if ($currentMode === 'C') {
                     if ($length % 2 === 1) {
-                        throw new BCGParseException('code128', 'The text "'.$text.'" must have an even number of character to be encoded in Table C.');
+                        throw new BCGParseException('code128', 'The text "' . $text . '" must have an even number of character to be encoded in Table C.');
                     }
                 }
 
@@ -500,7 +500,7 @@ class BCGcode128 extends BCGBarcode1D {
             $length = strlen($text) - $previousPos;
             if ($currentMode === 'C') {
                 if ($length % 2 === 1) {
-                    throw new BCGParseException('code128', 'The text "'.$text.'" must have an even number of character to be encoded in Table C.');
+                    throw new BCGParseException('code128', 'The text "' . $text . '" must have an even number of character to be encoded in Table C.');
                 }
             }
 
@@ -552,7 +552,7 @@ class BCGcode128 extends BCGBarcode1D {
         $match = array();
         if (preg_match('/[^' . $tmp . ']/', $text, $match) === 1) {
             // We found something not allowed
-            throw new BCGParseException('code128', 'The text "'.$text.'" can\'t be parsed with the Table B. The character "' . $match[0] . '" is not allowed.');
+            throw new BCGParseException('code128', 'The text "' . $text . '" can\'t be parsed with the Table B. The character "' . $match[0] . '" is not allowed.');
         } else {
             $latch = ($currentMode === 'B') ? '' : '1';
             $currentMode = 'B';
@@ -579,7 +579,7 @@ class BCGcode128 extends BCGBarcode1D {
         $match = array();
         if (preg_match('/[^' . $tmp . ']/', $text, $match) === 1) {
             // We found something not allowed
-            throw new BCGParseException('code128', 'The text "'.$text.'" can\'t be parsed with the Table C. The character "' . $match[0] . '" is not allowed.');
+            throw new BCGParseException('code128', 'The text "' . $text . '" can\'t be parsed with the Table C. The character "' . $match[0] . '" is not allowed.');
         } else {
             $latch = ($currentMode === 'C') ? '' : '2';
             $currentMode = 'C';
@@ -596,7 +596,7 @@ class BCGcode128 extends BCGBarcode1D {
      * @param string $starting_text
      * @return string
      */
-    private function getSequence(&$text, &$starting_text) {
+    private function getSequence($text, &$starting_text) {
         $e = 10000;
         $latLen = array(
             array(0, 1, 1),
@@ -613,9 +613,9 @@ class BCGcode128 extends BCGBarcode1D {
         $startA = $e;
         $startB = $e;
         $startC = $e;
-        if ($starting_text === 'A') $startA = 0;
-        if ($starting_text === 'B') $startB = 0;
-        if ($starting_text === 'C') $startC = 0;
+        if ($starting_text === 'A') { $startA = 0; }
+        if ($starting_text === 'B') { $startB = 0; }
+        if ($starting_text === 'C') { $startC = 0; }
 
         $curLen = array($startA, $startB, $startC);
         $curSeq = array(null, null, null);
@@ -647,7 +647,7 @@ class BCGcode128 extends BCGBarcode1D {
 
             // Special case, we do have a tilde and we process them
             if ($this->tilde && $input === '~') {
-                $tildeData = $this->extractTilde($text, $x);
+                $tildeData = self::extractTilde($text, $x);
 
                 if ($tildeData === '~~') {
                     // We simply skip a tilde
@@ -691,7 +691,7 @@ class BCGcode128 extends BCGBarcode1D {
                 }
 
                 for ($j = 0; $j < 2; $j++) {
-                    if ($j === $posArray[$i]) continue;
+                    if ($j === $posArray[$i]) { continue; }
                     if (($curLen[$j] + $shftLen[$j][$posArray[$i]] + $charSiz[$posArray[$i]]) < $nxtLen[$j]) {
                         $nxtLen[$j] = $curLen[$j] + $shftLen[$j][$posArray[$i]] + $charSiz[$posArray[$i]];
                         $nxtSeq[$j] = $curSeq[$j] . chr($posArray[$i] + 65) . '.';
@@ -734,8 +734,6 @@ class BCGcode128 extends BCGBarcode1D {
         if ($k === -1) {
             return '';
         }
-
-        $starting_text = chr($k + 65);
 
         return $curSeq[$k];
     }
@@ -801,7 +799,7 @@ class BCGcode128 extends BCGBarcode1D {
 
                 // We latch
                 $latch = $this->latch[$currentEncoding][$inputI];
-                if ($latch !== NULL) {
+                if ($latch !== null) {
                     $indcheck[] = $latch;
                     $data[] = $this->code[$latch];
                     $currentEncoding = $inputI;

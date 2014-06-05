@@ -69,28 +69,26 @@ class BCGcode11 extends BCGBarcode1D {
      * @return int[]
      */
     public function getDimension($w, $h) {
+        $startlength = 8;
+
         $textlength = 0;
         $c = strlen($this->text);
         for ($i = 0; $i < $c; $i++) {
-            $index = $this->findIndex($this->text[$i]);
-            if ($index !== false) {
-                $textlength += 6;
-                $textlength += substr_count($this->code[$index], '1');
-            }
+            $textlength += $this->getIndexLength($this->findIndex($this->text[$i]));
         }
 
-        $startlength = 8;
-
-        // We take the max length possible for checksums (it is 7 or 8...)
-        $checksumlength = 8;
-        if ($c >= 10) {
-            $checksumlength += 8;
+        $checksumlength = 0;
+        $this->calculateChecksum();
+        $c = count($this->checksumValue);
+        for ($i = 0; $i < $c; $i++) {
+            $checksumlength += $this->getIndexLength($this->checksumValue[$i]);
         }
 
-        $endlength = 7 * $this->scale;
+        $endlength = 7;
 
         $w += $startlength + $textlength + $checksumlength + $endlength;
         $h += $this->thickness;
+
         return parent::getDimension($w, $h);
     }
 
@@ -172,6 +170,16 @@ class BCGcode11 extends BCGBarcode1D {
         }
 
         return false;
+    }
+
+    private function getIndexLength($index) {
+        $length = 0;
+        if ($index !== false) {
+            $length += 6;
+            $length += substr_count($this->code[$index], '1');
+        }
+
+        return $length;
     }
 }
 ?>

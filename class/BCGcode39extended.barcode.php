@@ -48,7 +48,7 @@ class BCGcode39extended extends BCGcode39 {
             $pos = array_search($this->text[$i], $this->keys);
             if ($pos === false) {
                 // Search in extended?
-                $extended = $this->getExtendedVersion($this->text[$i]);
+                $extended = self::getExtendedVersion($this->text[$i]);
                 if ($extended === false) {
                     throw new BCGParseException('code39extended', 'The character \'' . $this->text[$i] . '\' is not allowed.');
                 } else {
@@ -176,7 +176,7 @@ class BCGcode39extended extends BCGcode39 {
      * @param string $char
      * @return string
      */
-    private function getExtendedVersion($char) {
+    private static function getExtendedVersion($char) {
         $o = ord($char);
         if ($o === 0) {
             return '%U';

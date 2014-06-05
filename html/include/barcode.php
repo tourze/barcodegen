@@ -31,7 +31,7 @@ $supportedBarcodes = array(
 
     // 2D
     'BCGaztec.php' => 'Aztec',
-    'BCGdatamatrix.php' => 'Datamatrix',
+    'BCGdatamatrix.php' => 'DataMatrix',
     'BCGmaxicode.php' => 'MaxiCode',
     'BCGpdf417.php' => 'PDF417',
     'BCGqrcode.php' => 'QRCode'

@@ -16,7 +16,7 @@ registerImageKey('mailerIdentifier', $mailerIdentifier);
 
 $default_value['serialNumber'] = '';
 $serialNumber = isset($_POST['serialNumber']) ? $_POST['serialNumber'] : $default_value['serialNumber'];
-registerImageKey('serialNumber', $mailerIdentifier);
+registerImageKey('serialNumber', $serialNumber);
 
 registerImageKey('code', 'BCGintelligentmail');
 

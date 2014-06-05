@@ -47,7 +47,7 @@ class BCGi25 extends BCGBarcode1D {
     public function setChecksum($checksum) {
         $this->checksum = (bool)$checksum;
     }
-    
+
     /**
      * Sets the ratio of the black bar compared to the white bars.
      *
@@ -122,7 +122,7 @@ class BCGi25 extends BCGBarcode1D {
         if ($c === 0) {
             throw new BCGParseException('i25', 'No data has been entered.');
         }
-        
+
         // Checking if all chars are allowed
         for ($i = 0; $i < $c; $i++) {
             if (array_search($this->text[$i], $this->keys) === false) {
@@ -193,7 +193,7 @@ class BCGi25 extends BCGBarcode1D {
         if ($this->ratio > 1) {
             $c = strlen($in);
             for ($i = 0; $i < $c; $i++) {
-                $in[$i] = $in[$i] === '1' ? ($this->ratio * intval($in[$i])) : $in[$i];
+                $in[$i] = $in[$i] === '1' ? $this->ratio : $in[$i];
             }
         }
 

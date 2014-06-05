@@ -1,4 +1,7 @@
 <?php
+define('IN_CB', true);
+include_once('include/function.php');
+
 function showError() {
     header('Content-Type: image/png');
     readfile('error.png');
@@ -61,7 +64,8 @@ try {
     $code_generated->setForegroundColor($color_black);
 
     if ($_GET['text'] !== '') {
-        $code_generated->parse($_GET['text']);
+        $text = convertText($_GET['text']);
+        $code_generated->parse($text);
     }
 } catch(Exception $exception) {
     $drawException = $exception;

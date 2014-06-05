@@ -15,7 +15,7 @@ function getImageKeys() {
 function getElementHtml($tag, $attributes, $content = false) {
     $code = '<' . $tag;
     foreach ($attributes as $attribute => $value) {
-        $code .= ' ' . $attribute . '="' . $value . '"';
+        $code .= ' ' . $attribute . '="' . htmlentities(stripslashes($value), ENT_COMPAT) . '"';
     }
 
     if ($content === false || $content === null) {
@@ -157,5 +157,14 @@ function findValueFromKey($haystack, $needle) {
     }
 
     return null;
+}
+
+function convertText($text) {
+    $text = stripslashes($text);
+    if (function_exists('mb_convert_encoding')) {
+        $text = mb_convert_encoding($text, 'ISO-8859-1', 'UTF-8');
+    }
+
+    return $text;
 }
 ?>

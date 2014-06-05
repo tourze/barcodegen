@@ -10,6 +10,7 @@
  */
 include_once('BCGArgumentException.php');
 include_once('BCGFont.php');
+include_once('BCGColor.php');
 
 class BCGFontFile implements BCGFont {
     const PHP_BOX_FIX = 0;
@@ -17,10 +18,9 @@ class BCGFontFile implements BCGFont {
     private $path;
     private $size;
     private $text = '';
-    private $rotationAngle = 0;
+    private $foregroundColor;
+    private $rotationAngle;
     private $box;
-    private $underlineX;
-    private $underlineY;
     private $boxFix;
 
     /**
@@ -36,6 +36,7 @@ class BCGFontFile implements BCGFont {
 
         $this->path = $fontPath;
         $this->size = $size;
+        $this->foregroundColor = new BCGColor('black');
         $this->setRotationAngle(0);
         $this->setBoxFix(self::PHP_BOX_FIX);
     }
@@ -56,7 +57,7 @@ class BCGFontFile implements BCGFont {
      */
     public function setText($text) {
         $this->text = $text;
-        $this->rebuildBox();
+        $this->box = null;
     }
 
     /**
@@ -65,7 +66,7 @@ class BCGFontFile implements BCGFont {
      * @return int
      */
     public function getRotationAngle() {
-        return $this->rotationAngle;
+        return (360 - $this->rotationAngle) % 360;
     }
 
     /**
@@ -79,7 +80,9 @@ class BCGFontFile implements BCGFont {
             $this->rotationAngle = 0;
         }
 
-        $this->rebuildBox();
+        $this->rotationAngle = (360 - $this->rotationAngle) % 360;
+
+        $this->box = null;
     }
 
     /**
@@ -98,10 +101,38 @@ class BCGFontFile implements BCGFont {
     public function setBackgroundColor($backgroundColor) {
     }
 
+    /**
+     * Gets the foreground color.
+     *
+     * @return BCGColor
+     */
+    public function getForegroundColor() {
+        return $this->foregroundColor;
+    }
+
+    /**
+     * Sets the foreground color.
+     *
+     * @param BCGColor $foregroundColor
+     */
+    public function setForegroundColor($foregroundColor) {
+        $this->foregroundColor = $foregroundColor;
+    }
+
+    /**
+     * Gets the box fix information.
+     *
+     * @return int
+     */
     public function getBoxFix() {
         return $this->boxFix;
     }
 
+    /**
+     * Sets the box fix information.
+     *
+     * @param int $value
+     */
     public function setBoxFix($value) {
         $this->boxFix = intval($value);
     }
@@ -114,18 +145,20 @@ class BCGFontFile implements BCGFont {
     public function getDimension() {
         $w = 0.0;
         $h = 0.0;
+        $box = $this->getBox();
 
-        if ($this->box !== null) {
-            $minX = min(array($this->box[0], $this->box[2], $this->box[4], $this->box[6]));
-            $maxX = max(array($this->box[0], $this->box[2], $this->box[4], $this->box[6]));
-            $minY = min(array($this->box[1], $this->box[3], $this->box[5], $this->box[7]));
-            $maxY = max(array($this->box[1], $this->box[3], $this->box[5], $this->box[7]));
-        
+        if ($box !== null) {
+            $minX = min(array($box[0], $box[2], $box[4], $box[6]));
+            $maxX = max(array($box[0], $box[2], $box[4], $box[6]));
+            $minY = min(array($box[1], $box[3], $box[5], $box[7]));
+            $maxY = max(array($box[1], $box[3], $box[5], $box[7]));
+
             $w = $maxX - $minX;
             $h = $maxY - $minY;
         }
 
-        if ($this->rotationAngle === 90 || $this->rotationAngle === 270) {
+        $rotationAngle = $this->getRotationAngle();
+        if ($rotationAngle === 90 || $rotationAngle === 270) {
             return array($h + self::PHP_BOX_FIX, $w);
         } else {
             return array($w + self::PHP_BOX_FIX, $h);
@@ -137,42 +170,40 @@ class BCGFontFile implements BCGFont {
      * $x and $y represent the left bottom corner.
      *
      * @param resource $im
-     * @param int $color
      * @param int $x
      * @param int $y
      */
-    public function draw($im, $color, $x, $y) {
+    public function draw($im, $x, $y) {
         $drawingPosition = $this->getDrawingPosition($x, $y);
-        imagettftext($im, $this->size, $this->rotationAngle, $drawingPosition[0], $drawingPosition[1], $color, $this->path, $this->text);
+        imagettftext($im, $this->size, $this->rotationAngle, $drawingPosition[0], $drawingPosition[1], $this->foregroundColor->allocate($im), $this->path, $this->text);
     }
 
     private function getDrawingPosition($x, $y) {
         $dimension = $this->getDimension();
-        if ($this->rotationAngle === 0) {
-            $y += abs(min($this->box[5], $this->box[7]));
-        } elseif ($this->rotationAngle === 90) {
-            $x += abs(min($this->box[5], $this->box[7]));
+        $box = $this->getBox();
+        $rotationAngle = $this->getRotationAngle();
+        if ($rotationAngle === 0) {
+            $y += abs(min($box[5], $box[7]));
+        } elseif ($rotationAngle === 90) {
+            $x += abs(min($box[5], $box[7]));
             $y += $dimension[1];
-        } elseif ($this->rotationAngle === 180) {
+        } elseif ($rotationAngle === 180) {
             $x += $dimension[0];
-            $y += abs(max($this->box[1], $this->box[3]));
-        } elseif ($this->rotationAngle === 270) {
-            $x += abs(max($this->box[1], $this->box[3]));
+            $y += abs(max($box[1], $box[3]));
+        } elseif ($rotationAngle === 270) {
+            $x += abs(max($box[1], $box[3]));
         }
 
         return array($x, $y);
     }
 
-    private function rebuildBox() {
-        $gd = imagecreate(1, 1);
-        $this->box = imagettftext($gd, $this->size, 0, 0, 0, 0, $this->path, $this->text);
-
-        $this->underlineX = abs($this->box[0]);
-        $this->underlineY = abs($this->box[1]);
-
-        if ($this->rotationAngle === 90 || $this->rotationAngle === 270) {
-            $this->underlineX ^= $this->underlineY ^= $this->underlineX ^= $this->underlineY;
+    private function getBox() {
+        if ($this->box === null) {
+            $gd = imagecreate(1, 1);
+            $this->box = imagettftext($gd, $this->size, 0, 0, 0, 0, $this->path, $this->text);
         }
+
+        return $this->box;
     }
 }
 ?>

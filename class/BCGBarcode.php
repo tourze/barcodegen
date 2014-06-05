@@ -409,7 +409,7 @@ abstract class BCGBarcode {
     private function getBiggestLabels($reversed = false) {
         $searchLR = $reversed ? 1 : 0;
         $searchTB = $reversed ? 0 : 1;
-    
+
         $labels = array();
         foreach ($this->labels as $label) {
             $position = $label->getPosition();

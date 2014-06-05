@@ -16,7 +16,9 @@
  * http://www.barcodephp.com
  */
 include_once('BCGParseException.php');
+include_once('BCGBarcode.php');
 include_once('BCGBarcode1D.php');
+include_once('BCGLabel.php');
 
 class BCGean8 extends BCGBarcode1D {
     protected $labelLeft = null;
@@ -52,23 +54,21 @@ class BCGean8 extends BCGBarcode1D {
      * @param resource $im
      */
     public function draw($im) {
-        $c = strlen($this->text);
-        
         // Checksum
         $this->calculateChecksum();
         $temp_text = $this->text . $this->keys[$this->checksumValue];
-        
+
         // Starting Code
         $this->drawChar($im, '000', true);
-        
+
         // Draw First 4 Chars (Left-Hand)
         for ($i = 0; $i < 4; $i++) {
             $this->drawChar($im, $this->findCode($temp_text[$i]), false);
         }
-        
+
         // Draw Center Guard Bar
         $this->drawChar($im, '00000', false);
-        
+
         // Draw Last 4 Chars (Right-Hand)
         for ($i = 4; $i < 8; $i++) {
             $this->drawChar($im, $this->findCode($temp_text[$i]), true);
@@ -182,7 +182,7 @@ class BCGean8 extends BCGBarcode1D {
                 $multiplier = 1;
                 $odd = true;
             }
-    
+
             if (!isset($this->keys[$this->text[$i - 1]])) {
                 return;
             }
@@ -224,7 +224,6 @@ class BCGean8 extends BCGBarcode1D {
         $this->drawSingleBar($im, BCGBarcode::COLOR_FG);
         $this->positionX += 2;
         $this->drawSingleBar($im, BCGBarcode::COLOR_FG);
-        $code1 = $this->positionX;
 
         // Center Guard Bar
         $this->positionX += 30;

@@ -87,7 +87,7 @@ class BCGDrawPNG extends BCGDraw {
             $size = $packed['size'];
             $chunk = $packed['chunk'];
 
-            $chunks[] = array('offset'=>$offset + 8, 'size'=>$size, 'chunk'=>$chunk);
+            $chunks[] = array('offset' => $offset + 8, 'size' => $size, 'chunk' => $chunk);
             $jump = $size + 12;
             $offset += $jump;
             $data = substr($data, $jump);
@@ -117,8 +117,8 @@ class BCGDrawPNG extends BCGDraw {
             // We didn't have a pHYs
             if($found == -1) {
                 // Don't do anything if we have a bad PNG
-                if($c >= 2 && $chunk[0]['chunk'] = 'IHDR') {
-                    array_splice($chunks, 1, 0, array(array('offset'=>33, 'size'=>9, 'chunk'=>'pHYs')));
+                if($c >= 2 && $chunks[0]['chunk'] === 'IHDR') {
+                    array_splice($chunks, 1, 0, array(array('offset' => 33, 'size' => 9, 'chunk' => 'pHYs')));
 
                     // Push the data
                     for($i = 2; $i < $c; $i++) {
@@ -138,7 +138,7 @@ class BCGDrawPNG extends BCGDraw {
     }
 
     private function internalSetC(&$bin, &$chunks) {
-        if (count($chunks) >= 2 && $chunk[0]['chunk'] = 'IHDR') {
+        if (count($chunks) >= 2 && $chunks[0]['chunk'] === 'IHDR') {
             $firstPart = substr($bin, 0, 33);
             $secondPart = substr($bin, 33);
             $cr = pack('H*', '0000004C74455874436F707972696768740047656E657261746564207769746820426172636F64652047656E657261746F7220666F722050485020687474703A2F2F7777772E626172636F64657068702E636F6D597F70B8');

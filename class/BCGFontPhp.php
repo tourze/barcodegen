@@ -16,6 +16,7 @@ class BCGFontPhp implements BCGFont {
     private $text;
     private $rotationAngle;
     private $backgroundColor;
+    private $foregroundColor;
 
     /**
      * Constructor.
@@ -24,8 +25,9 @@ class BCGFontPhp implements BCGFont {
      */
     public function __construct($font) {
         $this->font = max(0, intval($font));
+        $this->backgroundColor = new BCGColor('white');
+        $this->foregroundColor = new BCGColor('black');
         $this->setRotationAngle(0);
-        $this->setBackgroundColor(new BCGColor('white'));
     }
 
     /**
@@ -52,7 +54,7 @@ class BCGFontPhp implements BCGFont {
      * @return int
      */
     public function getRotationAngle() {
-        return $this->rotationAngle;
+        return (360 - $this->rotationAngle) % 360;
     }
 
     /**
@@ -65,6 +67,8 @@ class BCGFontPhp implements BCGFont {
         if ($this->rotationAngle !== 90 && $this->rotationAngle !== 180 && $this->rotationAngle !== 270) {
             $this->rotationAngle = 0;
         }
+
+        $this->rotationAngle = (360 - $this->rotationAngle) % 360;
     }
 
     /**
@@ -86,6 +90,24 @@ class BCGFontPhp implements BCGFont {
     }
 
     /**
+     * Gets the foreground color.
+     *
+     * @return BCGColor
+     */
+    public function getForegroundColor() {
+        return $this->foregroundColor;
+    }
+
+    /**
+     * Sets the foreground color.
+     *
+     * @param BCGColor $foregroundColor
+     */
+    public function setForegroundColor($foregroundColor) {
+        $this->foregroundColor = $foregroundColor;
+    }
+
+    /**
      * Returns the width and height that the text takes to be written.
      *
      * @return int[]
@@ -94,7 +116,8 @@ class BCGFontPhp implements BCGFont {
         $w = imagefontwidth($this->font) * strlen($this->text);
         $h = imagefontheight($this->font);
 
-        if ($this->rotationAngle === 90 || $this->rotationAngle === 270) {
+        $rotationAngle = $this->getRotationAngle();
+        if ($rotationAngle === 90 || $rotationAngle === 270) {
             return array($h, $w);
         } else {
             return array($w, $h);
@@ -106,25 +129,24 @@ class BCGFontPhp implements BCGFont {
      * $x and $y represent the left bottom corner.
      *
      * @param resource $im
-     * @param int $color
      * @param int $x
      * @param int $y
      */
-    public function draw($im, $color, $x, $y) {
-        if ($this->rotationAngle !== 0) {
+    public function draw($im, $x, $y) {
+        if ($this->getRotationAngle() !== 0) {
             if (!function_exists('imagerotate')) {
                 throw new BCGDrawException('The method imagerotate doesn\'t exist on your server. Do not use any rotation.');
             }
-        
+
             $w = imagefontwidth($this->font) * strlen($this->text);
             $h = imagefontheight($this->font);
             $gd = imagecreatetruecolor($w, $h);
             imagefilledrectangle($gd, 0, 0, $w - 1, $h - 1, $this->backgroundColor->allocate($gd));
-            imagestring($gd, $this->font, 0, 0, $this->text, $color);
+            imagestring($gd, $this->font, 0, 0, $this->text, $this->foregroundColor->allocate($gd));
             $gd = imagerotate($gd, $this->rotationAngle, 0);
             imagecopy($im, $gd, $x, $y, 0, 0, imagesx($gd), imagesy($gd));
         } else {
-            imagestring($im, $this->font, $x, $y, $this->text, $color);
+            imagestring($im, $this->font, $x, $y, $this->text, $this->foregroundColor->allocate($im));
         }
     }
 }

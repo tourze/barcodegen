@@ -12,6 +12,7 @@
  */
 include_once('BCGParseException.php');
 include_once('BCGArgumentException.php');
+include_once('BCGBarcode.php');
 include_once('BCGBarcode1D.php');
 
 class BCGintelligentmail extends BCGBarcode1D {
@@ -271,8 +272,8 @@ class BCGintelligentmail extends BCGBarcode1D {
      */
     public function setTrackingCode($barcodeIdentifier, $serviceTypeIdentifier, $mailerIdentifier, $serialNumber) {
         $barcodeIdentifier = (string)(int)$barcodeIdentifier;
-        $serviceTypeIdentifier = (string)(int)$serviceTypeIdentifier;
-        $mailerIdentifier = (string)(int)$mailerIdentifier;
+        $serviceTypeIdentifier = (int)$serviceTypeIdentifier;
+        $mailerIdentifier = (int)$mailerIdentifier;
         $serialNumber = (string)(int)$serialNumber;
 
         $barcodeIdentifier = str_pad($barcodeIdentifier, 2, '0', STR_PAD_LEFT);
@@ -286,12 +287,12 @@ class BCGintelligentmail extends BCGBarcode1D {
             throw new BCGArgumentException('Barcode Identifier second digit must be a number between 0 and 4.', 'barcodeIdentifier');
         }
 
-        if ((int)$serviceTypeIdentifier < 0 || (int)$serviceTypeIdentifier > 999) {
+        if ($serviceTypeIdentifier < 0 || $serviceTypeIdentifier > 999) {
             throw new BCGArgumentException('Service Type Identifier must be between 0 and 999.', 'serviceTypeIdentifier');
         }
 
         $mailerIdentifierLength = 6;
-        if ((int)$mailerIdentifier > 899999) {
+        if ($mailerIdentifier > 899999) {
             $mailerIdentifierLength = 9;
         }
 
@@ -300,14 +301,14 @@ class BCGintelligentmail extends BCGBarcode1D {
         }
 
         if ($mailerIdentifierLength === 9) {
-            if ((int)$mailerIdentifierLength < 0 || (int)$mailerIdentifier > 999999999) {
+            if ($mailerIdentifierLength < 0 || $mailerIdentifier > 999999999) {
                 throw new BCGArgumentException('Mailer Identifier must be between 0 and 999999999.', 'mailerIdentifier');
             }
         }
 
         $this->barcodeIdentifier = $barcodeIdentifier;
-        $this->serviceTypeIdentifier = str_pad((int)$serviceTypeIdentifier, 3, '0', STR_PAD_LEFT);
-        $this->mailerIdentifier = str_pad((int)$mailerIdentifier, $mailerIdentifierLength, '0', STR_PAD_LEFT);
+        $this->serviceTypeIdentifier = str_pad($serviceTypeIdentifier, 3, '0', STR_PAD_LEFT);
+        $this->mailerIdentifier = str_pad($mailerIdentifier, $mailerIdentifierLength, '0', STR_PAD_LEFT);
         $this->serialNumber = str_pad((int)$serialNumber, $mailerIdentifierLength === 6 ? 9 : 6, '0', STR_PAD_LEFT);
     }
 
@@ -488,7 +489,7 @@ class BCGintelligentmail extends BCGBarcode1D {
                 $data &= 0xffff;
             }
         }
-        
+
         return $frameCheckSequence;
     }
 
@@ -639,9 +640,9 @@ class BCGintelligentmail extends BCGBarcode1D {
         $remain = bcdiv(bcsub($dec, $last), 256, 0);
 
         if ($remain == 0) {
-                return pack('C', $last);
+            return pack('C', $last);
         } else {
-                return self::bcdecuc($remain).pack('C', $last);
+            return self::bcdecuc($remain) . pack('C', $last);
         }
     }
 }

@@ -63,7 +63,10 @@ registerImageKey('scale', $scale);
 registerImageKey('rotation', $rotation);
 registerImageKey('font_family', $font_family);
 registerImageKey('font_size', $font_size);
-registerImageKey('text', $text);
+registerImageKey('text', stripslashes($text));
+
+// Text in form is different than text sent to the image
+$text = convertText($text);
 ?>
 
 <div class="header">

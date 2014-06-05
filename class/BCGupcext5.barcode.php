@@ -20,6 +20,7 @@
  */
 include_once('BCGParseException.php');
 include_once('BCGBarcode1D.php');
+include_once('BCGLabel.php');
 
 class BCGupcext5 extends BCGBarcode1D {
     protected $codeParity = array();

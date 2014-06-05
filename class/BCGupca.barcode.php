@@ -17,7 +17,9 @@
  * http://www.barcodephp.com
  */
 include_once('BCGParseException.php');
+include_once('BCGBarcode.php');
 include_once('BCGean13.barcode.php');
+include_once('BCGLabel.php');
 
 class BCGupca extends BCGean13 {
     protected $labelRight = null;
@@ -65,7 +67,6 @@ class BCGupca extends BCGean13 {
 
         // Attemping to increase the 2 following bars
         $this->positionX += 1;
-        $code1 = $this->positionX;
         $temp_value = $this->findCode($temp_text[1]);
         $this->drawChar($im, $temp_value, false);
 
@@ -106,7 +107,6 @@ class BCGupca extends BCGean13 {
             $this->labelCenter1->setOffset(($this->scale * 44 - $labelCenter1Dimension[0]) / 2 + $this->scale * 6);
 
             $this->labelCenter2 = new BCGLabel(substr($label, 6, 5), $font, BCGLabel::POSITION_BOTTOM, BCGLabel::ALIGN_LEFT);
-            $labelCenter2Dimension = $this->labelCenter2->getDimension();
             $this->labelCenter2->setOffset(($this->scale * 44 - $labelCenter1Dimension[0]) / 2 + $this->scale * 45);
 
             $this->labelRight = new BCGLabel($this->keys[$this->checksumValue], $font, BCGLabel::POSITION_RIGHT, BCGLabel::ALIGN_BOTTOM);

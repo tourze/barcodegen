@@ -1,6 +1,6 @@
 $(function() {
     var attachMainBehaviors = function() {
-        $("select[name=type]").change(function() {
+        $("select[name=type]").on("change", function() {
             var selected = $(this).find("option:selected");
             window.location.href = selected.val();
         });
@@ -23,8 +23,8 @@ $(function() {
         var text = $("input[name=text]");
 
         $("#validCharacters").on("click", "[data-output]", function() {
-            var $this = $(this)
-                escaped = $this.data("escaped")
+            var $this = $(this),
+                escaped = $this.data("escaped"),
                 value = $this.data("output");
             if (escaped) {
                 value = unescape(value);

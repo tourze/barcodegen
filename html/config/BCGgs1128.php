@@ -2,7 +2,7 @@
 $classFile = 'BCGgs1128.barcode.php';
 $className = 'BCGgs1128';
 $baseClassFile = 'BCGBarcode1D.php';
-$codeVersion = '5.0.2';
+$codeVersion = '5.2.0';
 
 function customSetup($barcode, $get) {
     if (isset($get['start'])) {

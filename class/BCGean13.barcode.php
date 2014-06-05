@@ -17,7 +17,9 @@
  * http://www.barcodephp.com
  */
 include_once('BCGParseException.php');
+include_once('BCGBarcode.php');
 include_once('BCGBarcode1D.php');
+include_once('BCGLabel.php');
 
 class BCGean13 extends BCGBarcode1D {
     protected $codeParity = array();
@@ -121,7 +123,6 @@ class BCGean13 extends BCGBarcode1D {
             $this->labelCenter1->setOffset(($this->scale * 44 - $labelCenter1Dimension[0]) / 2 + $this->scale * 2);
 
             $this->labelCenter2 = new BCGLabel(substr($label, 7, 5) . $this->keys[$this->checksumValue], $font, BCGLabel::POSITION_BOTTOM, BCGLabel::ALIGN_LEFT);
-            $labelCenter2Dimension = $this->labelCenter2->getDimension();
             $this->labelCenter2->setOffset(($this->scale * 44 - $labelCenter1Dimension[0]) / 2 + $this->scale * 48);
 
             if ($this->alignLabel) {
@@ -157,7 +158,7 @@ class BCGean13 extends BCGBarcode1D {
         if ($c === 0) {
             throw new BCGParseException('ean13', 'No data has been entered.');
         }
-    
+
         $this->checkCharsAllowed();
         $this->checkCorrectLength();
 
@@ -289,15 +290,15 @@ class BCGean13 extends BCGBarcode1D {
 
         // Center Guard Bar
         $this->positionX += 44;
-        $this->DrawSingleBar($im, BCGBarcode::COLOR_FG);
+        $this->drawSingleBar($im, BCGBarcode::COLOR_FG);
         $this->positionX += 2;
-        $this->DrawSingleBar($im, BCGBarcode::COLOR_FG);
+        $this->drawSingleBar($im, BCGBarcode::COLOR_FG);
 
         // Last Bars
         $this->positionX += 44;
-        $this->DrawSingleBar($im, BCGBarcode::COLOR_FG);
+        $this->drawSingleBar($im, BCGBarcode::COLOR_FG);
         $this->positionX += 2;
-        $this->DrawSingleBar($im, BCGBarcode::COLOR_FG);
+        $this->drawSingleBar($im, BCGBarcode::COLOR_FG);
 
         $this->positionX = $rememberX;
         $this->thickness = $rememberH;

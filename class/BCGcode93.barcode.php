@@ -100,7 +100,7 @@ class BCGcode93 extends BCGBarcode1D {
             $pos = array_search($this->text[$i], $this->keys);
             if ($pos === false) {
                 // Search in extended?
-                $extended = $this->getExtendedVersion($this->text[$i]);
+                $extended = self::getExtendedVersion($this->text[$i]);
                 if ($extended === false) {
                     throw new BCGParseException('code93', 'The character \'' . $this->text[$i] . '\' is not allowed.');
                 } else {
@@ -171,7 +171,6 @@ class BCGcode93 extends BCGBarcode1D {
      * @return int[]
      */
     public function getDimension($w, $h) {
-
         $startlength = 9;
         $textlength = 9 * count($this->data);
         $checksumlength = 2 * 9;
@@ -270,7 +269,7 @@ class BCGcode93 extends BCGBarcode1D {
      * @param string $char
      * @return string
      */
-    private function getExtendedVersion($char) {
+    private static function getExtendedVersion($char) {
         $o = ord($char);
         if ($o === 0) {
             return '%U';

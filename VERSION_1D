@@ -1,3 +1,13 @@
+v5.2.0      26 may 2014     Fix potential break in PNG writter.
+                            Fix BCGColor. Deprecated usage of string character reference.
+                            Rotation of text or barcode is now CLOCKWISE.
+                            Fix Code11. Incorrect size when using a scale bigger than 1.
+                            Fix Code128. Potential incorrect table lookup.
+                            Fix IntelligentMail user interface not accepting correct serial number.
+                            Improve speed by setting some methods static.
+                            Fix OtherCode. It now checks for incorrect input.
+                            Use ISO-8859-1 when generating a barcode with the user interface.
+                            Usage of quotes and double quotes was not working properly with the user interface.
 v5.1.0      4  oct 2012     Files moved to support 1D and 2D barcodes together
                             Whiskers has been removed from writing a small line in scale 1 (bug in PHP)
                             Add alignDefaultLabel for EAN-13 and UPC-A

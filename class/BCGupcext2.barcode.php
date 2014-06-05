@@ -61,7 +61,7 @@ class BCGupcext2 extends BCGBarcode1D {
         for ($i = 0; $i < 2; $i++) {
             $this->drawChar($im, self::inverse($this->findCode($this->text[$i]), $this->codeParity[intval($this->text) % 4][$i]), false);
             if ($i === 0) {
-                $this->DrawChar($im, '00', false);    // Inter-char
+                $this->drawChar($im, '00', false);    // Inter-char
             }
         }
 

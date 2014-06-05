@@ -2,7 +2,7 @@
 $classFile = 'BCGi25.barcode.php';
 $className = 'BCGi25';
 $baseClassFile = 'BCGBarcode1D.php';
-$codeVersion = '5.0.2';
+$codeVersion = '5.2.0';
 
 function customSetup($barcode, $get) {
     if (isset($get['checksum'])) {

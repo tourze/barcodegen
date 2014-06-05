@@ -32,6 +32,7 @@ class BCGLabel {
     private $spacing;
     private $rotationAngle;
     private $backgroundColor;
+    private $foregroundColor;
 
     /**
      * Constructor.
@@ -50,8 +51,8 @@ class BCGLabel {
         $this->setSpacing(4);
         $this->setOffset(0);
         $this->setRotationAngle(0);
-        
         $this->setBackgroundColor(new BCGColor('white'));
+        $this->setForegroundColor(new BCGColor('black'));
     }
 
     /**
@@ -96,6 +97,7 @@ class BCGLabel {
         $this->font->setText($this->text);
         $this->font->setRotationAngle($this->rotationAngle);
         $this->font->setBackgroundColor($this->backgroundColor);
+        $this->font->setForegroundColor($this->foregroundColor);
     }
 
     /**
@@ -183,7 +185,7 @@ class BCGLabel {
     /**
      * Gets the rotation angle in degree.
      *
-     * @return float
+     * @return int
      */
     public function getRotationAngle() {
         return $this->font->getRotationAngle();
@@ -204,8 +206,8 @@ class BCGLabel {
      *
      * @return BCGColor
      */
-    public function getBackgroundColor($backgroundColor) {
-        return $this->font->getBackgroundColor();
+    public function getBackgroundColor() {
+        return $this->backgroundColor;
     }
 
     /**
@@ -216,6 +218,25 @@ class BCGLabel {
     public /*internal*/ function setBackgroundColor($backgroundColor) {
         $this->backgroundColor = $backgroundColor;
         $this->font->setBackgroundColor($this->backgroundColor);
+    }
+
+    /**
+     * Gets the foreground color.
+     *
+     * @return BCGColor
+     */
+    public function getForegroundColor() {
+        return $this->font->getForegroundColor();
+    }
+
+    /**
+     * Sets the foreground color.
+     *
+     * @param BCGColor $foregroundColor
+     */
+    public function setForegroundColor($foregroundColor) {
+        $this->foregroundColor = $foregroundColor;
+        $this->font->setForegroundColor($this->foregroundColor);
     }
 
     /**
@@ -232,7 +253,7 @@ class BCGLabel {
         $dimension = $this->font->getDimension();
         $w = $dimension[0];
         $h = $dimension[1];
-        
+
         if ($this->position === self::POSITION_TOP || $this->position === self::POSITION_BOTTOM) {
             $h += $this->spacing;
             $w += max(0, $this->offset);
@@ -291,8 +312,9 @@ class BCGLabel {
                 $y = $y2 + $this->offset - $fontDimension[1];
             }
         }
-        
+
         $this->font->setText($this->text);
-        $this->font->draw($im, 0, $x, $y);
+        $this->font->draw($im, $x, $y);
     }
 }
+?>

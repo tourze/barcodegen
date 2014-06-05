@@ -135,10 +135,10 @@ class BCGisbn extends BCGean13 {
                     $lastCharacter = $this->text[12];
                     $this->text = substr($this->text, 0, 12);
                 }
-                
+
                 $checksum = $this->processChecksum();
                 $isbn = 'ISBN ' . substr($this->text, 0, 3) . '-' . substr($this->text, 3, 9) . '-' . $checksum;
-                
+
                 // Put the last character back
                 if ($c === 13) {
                     $this->text .= $lastCharacter;
@@ -151,7 +151,7 @@ class BCGisbn extends BCGean13 {
 
                 $checksum = 11 - $checksum % 11;
                 if ($checksum === 10) {
-                    $checksum = 'X';
+                    $checksum = 'X'; // Changing type
                 }
 
                 $isbn = 'ISBN ' . substr($this->text, 0, 9) . '-' . $checksum;

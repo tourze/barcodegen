@@ -10,6 +10,8 @@
  * http://www.barcodephp.com
  */
 include_once('BCGBarcode.php');
+include_once('BCGColor.php');
+include_once('BCGDrawException.php');
 include_once('drawer/BCGDrawJPG.php');
 include_once('drawer/BCGDrawPNG.php');
 
@@ -24,7 +26,7 @@ class BCGDrawing {
     private $filename;      // char *
     private $im;            // {object}
     private $barcode;       // BCGBarcode
-    private $dpi;           // int
+    private $dpi;           // float
     private $rotateDegree;  // float
 
     /**
@@ -105,7 +107,7 @@ class BCGDrawing {
     /**
      * Gets the DPI for supported filetype.
      *
-     * @return int
+     * @return float
      */
     public function getDPI() {
         return $this->dpi;
@@ -121,7 +123,7 @@ class BCGDrawing {
     }
 
     /**
-     * Gets the rotation angle in degree.
+     * Gets the rotation angle in degree clockwise.
      *
      * @return float
      */
@@ -130,7 +132,7 @@ class BCGDrawing {
     }
 
     /**
-     * Sets the rotation angle in degree.
+     * Sets the rotation angle in degree clockwise.
      *
      * @param float $degree
      */
@@ -161,7 +163,7 @@ class BCGDrawing {
         $im = $this->im;
         if ($this->rotateDegree > 0.0) {
             if (function_exists('imagerotate')) {
-                $im = imagerotate($this->im, $this->rotateDegree, $this->color->allocate($this->im));
+                $im = imagerotate($this->im, 360 - $this->rotateDegree, $this->color->allocate($this->im));
             } else {
                 throw new BCGDrawException('The method imagerotate doesn\'t exist on your server. Do not use any rotation.');
             }

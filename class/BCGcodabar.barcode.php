@@ -109,7 +109,7 @@ class BCGcodabar extends BCGBarcode1D {
         if ($c == 0 || ($this->text[0] !== 'A' && $this->text[0] !== 'B' && $this->text[0] !== 'C' && $this->text[0] !== 'D')) {
             throw new BCGParseException('codabar', 'The text must start by the character A, B, C, or D.');
         }
-        
+
         // Must end by A, B, C or D
         $c2 = $c - 1;
         if ($c2 === 0 || ($this->text[$c2] !== 'A' && $this->text[$c2] !== 'B' && $this->text[$c2] !== 'C' && $this->text[$c2] !== 'D')) {

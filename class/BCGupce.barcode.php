@@ -19,7 +19,9 @@
  * http://www.barcodephp.com
  */
 include_once('BCGParseException.php');
+include_once('BCGBarcode.php');
 include_once('BCGBarcode1D.php');
+include_once('BCGLabel.php');
 
 class BCGupce extends BCGBarcode1D {
     protected $codeParity = array();
@@ -92,7 +94,7 @@ class BCGupce extends BCGBarcode1D {
         $this->drawChar($im, '000', true);
         $c = strlen($this->upce);
         for ($i = 0; $i < $c; $i++) {
-            $this->drawChar($im, self::inverse($this->findCode($this->upce[$i]), $this->codeParity[$this->text[0]][$this->checksumValue][$i]), false);
+            $this->drawChar($im, self::inverse($this->findCode($this->upce[$i]), $this->codeParity[intval($this->text[0])][$this->checksumValue][$i]), false);
         }
 
         // Draw Center Guard Bar
@@ -133,7 +135,6 @@ class BCGupce extends BCGBarcode1D {
     protected function addDefaultLabel() {
         if ($this->isDefaultEanLabelEnabled()) {
             $this->processChecksum();
-            $label = $this->getLabel();
             $font = $this->font;
 
             $this->labelLeft = new BCGLabel(substr($this->text, 0, 1), $font, BCGLabel::POSITION_LEFT, BCGLabel::ALIGN_BOTTOM);
@@ -141,7 +142,7 @@ class BCGupce extends BCGBarcode1D {
             $this->labelLeft->setSpacing(8);
             $this->labelLeft->setOffset($labelLeftDimension[1] / 2);
 
-            $this->labelCenter = new BCGLabel(substr($this->upce, 0), $font, BCGLabel::POSITION_BOTTOM, BCGLabel::ALIGN_LEFT);
+            $this->labelCenter = new BCGLabel($this->upce, $font, BCGLabel::POSITION_BOTTOM, BCGLabel::ALIGN_LEFT);
             $labelCenterDimension = $this->labelCenter->getDimension();
             $this->labelCenter->setOffset(($this->scale * 46 - $labelCenterDimension[0]) / 2 + $this->scale * 2);
 
@@ -306,7 +307,6 @@ class BCGupce extends BCGBarcode1D {
         $this->drawSingleBar($im, BCGBarcode::COLOR_FG);
         $this->positionX += 2;
         $this->drawSingleBar($im, BCGBarcode::COLOR_FG);
-        $code1 = $this->positionX;
 
         // Last Bars
         $this->positionX += 46;
